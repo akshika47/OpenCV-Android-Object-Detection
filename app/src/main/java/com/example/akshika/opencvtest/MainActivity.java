@@ -42,8 +42,8 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     TextView tvName;
 
     // Linking
-    Scalar RED = new Scalar(255,0,0);
-    Scalar GREEN = new Scalar(0,255,0);
+    Scalar RED = new Scalar(255, 0, 0);
+    Scalar GREEN = new Scalar(0, 255, 0);
 
 
     FeatureDetector detector;
@@ -54,7 +54,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     Mat img1;
     MatOfKeyPoint keypoints1;
     MatOfKeyPoint keypoints2;
-    
+
     static {
         if (!OpenCVLoader.initDebug())
             Log.d("ERROR", "Unable to load OpenCV");
@@ -87,7 +87,8 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     private void initializeOpenCVDependencies() throws IOException {
         mOpenCvCameraView.enableView();
         detector = FeatureDetector.create(FeatureDetector.ORB);
-        descriptor = DescriptorExtractor.create(DescriptorExtractor.ORB);;
+        descriptor = DescriptorExtractor.create(DescriptorExtractor.ORB);
+        ;
         matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
         img1 = new Mat();
 
@@ -97,7 +98,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         Utils.bitmapToMat(bitmap, img1);
         Imgproc.cvtColor(img1, img1, Imgproc.COLOR_RGB2GRAY);
 
-        img1.convertTo(img1,0); //converting the image to match with the type of the cameras image
+        img1.convertTo(img1, 0); //converting the image to match with the type of the cameras image
         descriptors1 = new Mat();
         keypoints1 = new MatOfKeyPoint();
 
@@ -105,7 +106,6 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         descriptor.compute(img1, keypoints1, descriptors1);
 
     }
-
 
 
     public MainActivity() {
@@ -123,7 +123,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        setContentView(R.layout.tutorial1_surface_view);
+        setContentView(R.layout.layout);
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial1_activity_java_surface_view);
 
@@ -167,8 +167,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     public void onCameraViewStopped() {
     }
 
-    public Mat recognize(Mat aInputFrame)
-    {
+    public Mat recognize(Mat aInputFrame) {
 
         Imgproc.cvtColor(aInputFrame, aInputFrame, Imgproc.COLOR_RGB2GRAY);
         descriptors2 = new Mat();
@@ -180,11 +179,9 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         // Matching
 
         MatOfDMatch matches = new MatOfDMatch();
-        if(img1.type() == aInputFrame.type()) {
+        if (img1.type() == aInputFrame.type()) {
             matcher.match(descriptors1, descriptors2, matches);
-        }
-        else
-        {
+        } else {
             return aInputFrame;
         }
         List<DMatch> matchesList = matches.toList();
@@ -192,16 +189,16 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         Double max_dist = 0.0;
         Double min_dist = 100.0;
 
-        for(int i = 0;i < matchesList.size(); i++){
+        for (int i = 0; i < matchesList.size(); i++) {
             Double dist = (double) matchesList.get(i).distance;
             if (dist < min_dist)
                 min_dist = dist;
-            if ( dist > max_dist)
+            if (dist > max_dist)
                 max_dist = dist;
         }
 
         LinkedList<DMatch> good_matches = new LinkedList<DMatch>();
-        for(int i = 0;i < matchesList.size(); i++){
+        for (int i = 0; i < matchesList.size(); i++) {
             if (matchesList.get(i).distance <= (1.5 * min_dist))
                 good_matches.addLast(matchesList.get(i));
         }
@@ -210,15 +207,15 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         goodMatches.fromList(good_matches);
         Mat outputImg = new Mat();
         MatOfByte drawnMatches = new MatOfByte();
-        if(aInputFrame.empty() || aInputFrame.cols()<1 || aInputFrame.rows()<1)
-        {
+        if (aInputFrame.empty() || aInputFrame.cols() < 1 || aInputFrame.rows() < 1) {
             return aInputFrame;
         }
         Features2d.drawMatches(img1, keypoints1, aInputFrame, keypoints2, goodMatches, outputImg, GREEN, RED, drawnMatches, Features2d.NOT_DRAW_SINGLE_POINTS);
-        Imgproc.resize(outputImg,outputImg,aInputFrame.size());
+        Imgproc.resize(outputImg, outputImg, aInputFrame.size());
 
         return outputImg;
-        }
+    }
+
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
         return recognize(inputFrame.rgba());
 
