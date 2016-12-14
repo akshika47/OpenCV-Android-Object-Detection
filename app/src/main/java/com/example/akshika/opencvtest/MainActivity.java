@@ -40,20 +40,14 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     private int w, h;
     private CameraBridgeViewBase mOpenCvCameraView;
     TextView tvName;
-
-    // Linking
     Scalar RED = new Scalar(255, 0, 0);
     Scalar GREEN = new Scalar(0, 255, 0);
-
-
     FeatureDetector detector;
     DescriptorExtractor descriptor;
     DescriptorMatcher matcher;
-    Mat descriptors2;
-    Mat descriptors1;
+    Mat descriptors2,descriptors1;
     Mat img1;
-    MatOfKeyPoint keypoints1;
-    MatOfKeyPoint keypoints2;
+    MatOfKeyPoint keypoints1,keypoints2;
 
     static {
         if (!OpenCVLoader.initDebug())
@@ -88,20 +82,16 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         mOpenCvCameraView.enableView();
         detector = FeatureDetector.create(FeatureDetector.ORB);
         descriptor = DescriptorExtractor.create(DescriptorExtractor.ORB);
-        ;
         matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
         img1 = new Mat();
-
         AssetManager assetManager = getAssets();
         InputStream istr = assetManager.open("a.jpeg");
         Bitmap bitmap = BitmapFactory.decodeStream(istr);
         Utils.bitmapToMat(bitmap, img1);
         Imgproc.cvtColor(img1, img1, Imgproc.COLOR_RGB2GRAY);
-
         img1.convertTo(img1, 0); //converting the image to match with the type of the cameras image
         descriptors1 = new Mat();
         keypoints1 = new MatOfKeyPoint();
-
         detector.detect(img1, keypoints1);
         descriptor.compute(img1, keypoints1, descriptors1);
 
@@ -122,15 +112,11 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         setContentView(R.layout.layout);
-
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial1_activity_java_surface_view);
-
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
         tvName = (TextView) findViewById(R.id.text1);
-
 
     }
 
@@ -172,12 +158,10 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         Imgproc.cvtColor(aInputFrame, aInputFrame, Imgproc.COLOR_RGB2GRAY);
         descriptors2 = new Mat();
         keypoints2 = new MatOfKeyPoint();
-
         detector.detect(aInputFrame, keypoints2);
         descriptor.compute(aInputFrame, keypoints2, descriptors2);
 
         // Matching
-
         MatOfDMatch matches = new MatOfDMatch();
         if (img1.type() == aInputFrame.type()) {
             matcher.match(descriptors1, descriptors2, matches);
