@@ -2,10 +2,8 @@ package com.example.akshika.opencvtest;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -18,14 +16,12 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
-import org.opencv.core.CvType;
 import org.opencv.core.DMatch;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfDMatch;
 import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.features2d.DescriptorExtractor;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
@@ -171,7 +167,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     public void onCameraViewStopped() {
     }
 
-    public Mat recognizeBanana(Mat aInputFrame)
+    public Mat recognize(Mat aInputFrame)
     {
 
         Imgproc.cvtColor(aInputFrame, aInputFrame, Imgproc.COLOR_RGB2GRAY);
@@ -212,7 +208,6 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
         MatOfDMatch goodMatches = new MatOfDMatch();
         goodMatches.fromList(good_matches);
-        System.out.println(matches.size() + " " + goodMatches.size());
         Mat outputImg = new Mat();
         MatOfByte drawnMatches = new MatOfByte();
         if(aInputFrame.empty() || aInputFrame.cols()<1 || aInputFrame.rows()<1)
@@ -220,13 +215,12 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
             return aInputFrame;
         }
         Features2d.drawMatches(img1, keypoints1, aInputFrame, keypoints2, goodMatches, outputImg, GREEN, RED, drawnMatches, Features2d.NOT_DRAW_SINGLE_POINTS);
-        Log.d(TAG, "Good Match "+ goodMatches.size());
         Imgproc.resize(outputImg,outputImg,aInputFrame.size());
 
         return outputImg;
         }
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-        return recognizeBanana(inputFrame.rgba());
+        return recognize(inputFrame.rgba());
 
     }
 }
