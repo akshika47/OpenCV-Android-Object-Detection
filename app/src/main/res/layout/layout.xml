@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:id="@+id/text1"
-        android:text="test"
+        android:text="Object Detection"
         android:textStyle="bold"
         android:textColor="#ff00ff"
         android:background="#00ff00"
